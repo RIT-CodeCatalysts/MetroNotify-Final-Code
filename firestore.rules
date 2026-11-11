@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // This version uses Flask Admin SDK as the ONLY database access path.
+    // Firebase Authentication ID tokens are verified by Flask.
+    // Deploying this file may block OTHER CLIENTS using the same Firestore
+    // project. Do not deploy without permission from all project owners.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
