@@ -1179,8 +1179,7 @@ def dismiss_notification(notification_id):
 # PUBLIC STATISTICS
 # Build public homepage counts from published alert records only.
 # No private ratepayer reports are exposed through these statistics.
-@app.get("/api/public/statistics")
-def public_statistics():
+def _load_public_statistics():
     """Live homepage counts using records from Firestore (up to 500 alerts)."""
     try:
         sast = timezone(timedelta(hours=2), name="SAST")
@@ -1210,7 +1209,9 @@ def public_statistics():
     except Exception:
         app.logger.exception("Unable to calculate homepage statistics")
         return error("Live statistics unavailable", 500)
-
+@app.route("/api/public/statistics")
+def public_statistics():
+    return get_cached_public("public_statistics", 60, _load_public_statistics)
 
 # -----------------------------------------------------------------------------
 # Public incident locations: readable area names without exposing private homes
