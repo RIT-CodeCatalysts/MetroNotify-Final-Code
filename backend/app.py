@@ -3,6 +3,7 @@
 Firestore is the source of truth; anonymous calls cannot access private data.
 """
 import logging
+import time
 import os
 from datetime import datetime, timedelta, timezone
 
@@ -140,13 +141,28 @@ def error(message, status=400):
     return jsonify({"status": "error", "message": message}), status
 
 
+#Updated below: 17/11/2026 - Yusriy
 
 # SAFE LIST DOCUMENTS
-# Load only a limited number of Firestore documents rather than the
-# entire collection. Large collections will eventually need pagination.
+
+# Simple in-memory cache - stops Spark quota burn
+# 1 Firestore read per 60 seconds, no matter how many people refresh
+_PUBLIC_CACHE = {}
+
+def get_cached_public(key, ttl_seconds, loader):
+    now = time.time()
+    hit = _PUBLIC_CACHE.get(key)
+    if hit and now - hit[0] < ttl_seconds:
+        return hit[1]
+    data = loader()
+    _PUBLIC_CACHE[key] = (now, data)
+    return data
+
+def clear_public_cache():
+    _PUBLIC_CACHE.clear()
 def safe_list_documents(collection, limit=50):
     return list(db.collection(collection).limit(limit).stream())
-
+#Updated ends here (above): 17/11/2026 - Yusriy
 
 
 # HEALTH CHECK
@@ -1233,7 +1249,9 @@ def location_enriched_alert(snapshot, report_cache=None):
     source_report = {}
 
     # Older alerts sometimes have a saved report ID, but no readable area.
-    if isinstance(report_id, str) and report_id and len(report_id) <= 128:
+    # Only fetch linked report if alert is MISSING its area - saves 1 read per alert
+has_area = public_place_name(raw.get("area")) or public_place_name(raw.get("municipality"))
+if not has_area and isinstance(report_id, str) and report_id and len(report_id) <= 128:
         if report_id not in cache:
             try:
                 source = db.collection("reports").document(report_id).get()
@@ -1371,13 +1389,15 @@ def update_admin_alert_location(alert_id):
 @app.get("/api/alerts")
 def public_alerts():
     """Only administrator-published alerts are public; raw resident reports are not."""
-    try:
+    def _load():
         report_cache = {}
         rows = [location_enriched_alert(doc, report_cache)
                 for doc in safe_list_documents("alerts")
                 if (doc.to_dict() or {}).get("published") is True]
         rows.sort(key=lambda x: x.get("reportedOn") or "", reverse=True)
-        return jsonify({"alerts": rows})
+        return rows
+    try:
+        return jsonify({"alerts": get_cached_public("public_alerts", 60, _load)})
     except Exception:
         app.logger.exception("Unable to load alerts")
         return error("Unable to load alerts", 500)
