@@ -314,7 +314,7 @@ def update_my_billing():
 def admin_ratepayers():
     """Return only billing-review fields to authorised Municipal Admins."""
     rows = []
-    for doc in safe_list_documents("users", 500):
+    for doc in safe_list_documents("users", 50):
         profile = doc.to_dict() or {}
         if profile.get("role") != "ratepayer":
             continue
@@ -1172,7 +1172,7 @@ def public_statistics():
         active = []
         ended_today = 0
         # Scan published alerts and count those still active in South African time.
-        for snapshot in safe_list_documents("alerts", 500):
+        for snapshot in safe_list_documents("alerts", 50):
             alert = snapshot.to_dict() or {}
             status = str(alert.get("status") or "").strip().lower()
             if alert.get("published") is True and status not in {"resolved", "closed"}:
@@ -1287,7 +1287,7 @@ def admin_alerts():
     """Admins see published and ended alert records; the public cannot."""
     rows = []
     report_cache = {}
-    for doc in safe_list_documents("alerts", 500):
+    for doc in safe_list_documents("alerts", 50):
         row = location_enriched_alert(doc, report_cache)
         raw = doc.to_dict() or {}
         row["published"] = raw.get("published") is True
