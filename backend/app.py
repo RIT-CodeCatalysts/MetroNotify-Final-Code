@@ -144,7 +144,7 @@ def error(message, status=400):
 # SAFE LIST DOCUMENTS
 # Load only a limited number of Firestore documents rather than the
 # entire collection. Large collections will eventually need pagination.
-def safe_list_documents(collection, limit=200):
+def safe_list_documents(collection, limit=50):
     return list(db.collection(collection).limit(limit).stream())
 
 
