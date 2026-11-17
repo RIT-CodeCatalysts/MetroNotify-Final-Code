@@ -1250,8 +1250,8 @@ def location_enriched_alert(snapshot, report_cache=None):
 
     # Older alerts sometimes have a saved report ID, but no readable area.
     # Only fetch linked report if alert is MISSING its area - saves 1 read per alert
-has_area = public_place_name(raw.get("area")) or public_place_name(raw.get("municipality"))
-if not has_area and isinstance(report_id, str) and report_id and len(report_id) <= 128:
+    has_area = public_place_name(raw.get("area")) or public_place_name(raw.get("municipality"))
+    if not has_area and isinstance(report_id, str) and report_id and len(report_id) <= 128:
         if report_id not in cache:
             try:
                 source = db.collection("reports").document(report_id).get()
@@ -1263,8 +1263,8 @@ if not has_area and isinstance(report_id, str) and report_id and len(report_id) 
 
     # Use area names that were actually entered in public alert or report.
     # Do not promote a private house address to a public alert.
-    for field in ("province", "municipality", "area"):
-        result[field] = (public_place_name(raw.get(field))
+        for field in ("province", "municipality", "area"):
+            result[field] = (public_place_name(raw.get(field))
                          or public_place_name(source_report.get(field))
                          or "")
 
