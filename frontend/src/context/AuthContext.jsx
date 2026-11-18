@@ -76,12 +76,21 @@ function AuthProvider({ children }) {
     return () => { active = false; unsubscribe(); };
   }, [refreshProfile]);
 
-  // Values such as XP are server-owned; never manufacture points in localStorage.
-  useEffect(() => {
+  /*
+  NB Updated on 18/11/2026 by Yusriy
+
+  Removed below code to prevent firebase from reaching daily 50k limit
+  XP / profile is refreshed on login and after actions - no timer polling.
+  Removed 20s interval that was re-reading /api/me 180x per hour.
+
+    useEffect(() => {
     if (!currentUser?.id) return;
     const timer = setInterval(() => refreshProfile().catch(() => {}), 20000);
     return () => clearInterval(timer);
   }, [currentUser?.id, refreshProfile]);
+  
+  */
+
 
   async function login(email, password) {
     setAuthError(""); setAuthNotice("");
