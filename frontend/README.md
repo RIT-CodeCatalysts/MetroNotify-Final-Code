@@ -9,4 +9,4 @@ Firebase-first MetroNotify (Ratepayer, Municipal Admin and shared Technician Por
 5. Each technician uses their own verified Firebase Auth email/password to access the same Technician Portal. The team overview contains no private resident descriptions.
 6. Email notifications are opt-in and require the Firebase Trigger Email extension, set up by the project owner.
 
-Read `../INTEGRATION_GUIDE.md` before testing; security configuration and Admin setup require permission from the Firebase project owner.
+Read `../INTEGRATION_GUIDE.md` before testing; security configuration and Admin setup require permission from Firebase.
