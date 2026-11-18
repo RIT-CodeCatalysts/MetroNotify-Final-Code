@@ -39,6 +39,8 @@ export function NotificationsProvider({ children }) {
   }));
 
   const refreshNotifications = useCallback(async () => {
+    // FIX: Don't fetch if tab is hidden - was burning reads overnight
+    if (document.hidden) return;
     if (!currentUser) { setReportNotifs([]); return; }
     try {
       const result = await apiRequest("/api/notifications");
@@ -55,10 +57,20 @@ export function NotificationsProvider({ children }) {
     }
   }, [currentUser?.id]);
 
+  // FIX 18/11/2026 by Yusriy - Prevent 50k Firestore limit
+  // Was: setInterval 15000 (15 sec) forever, even when tab hidden
+  // Now: Every 2 minutes, only when tab visible + refresh on return
   useEffect(() => {
     refreshNotifications();
-    const timer = setInterval(refreshNotifications, 15000);
-    return () => clearInterval(timer);
+    const timer = setInterval(refreshNotifications, 120000);
+    const onVisible = () => {
+      if (!document.hidden) refreshNotifications();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [refreshNotifications]);
 
   function markReportsRead(notifs = reportNotifs) {
