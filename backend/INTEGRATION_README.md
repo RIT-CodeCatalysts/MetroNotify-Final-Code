@@ -29,9 +29,4 @@ The code is not automatically authorised to access any Firebase project. You mus
 | POST | `/api/comments`, `/api/badges/check` | Ratepayer |
 | GET | `/api/leaderboard/<zone>` | Authenticated |
 
-### Safety notes
 
-- Do not run `create_test_data.py` against a shared Firebase database without explicit approval.
-- The current demo mode is not sufficient for public deployment; never expose this Flask port.
-- Database writes are not automatically performed when importing modules, except server connection setup.
-- Full browser build and live Firebase integration tests need to run on a machine with dependencies and authorized project access.
