@@ -1,6 +1,6 @@
 # MetroNotify — Firebase-first integrated workspace
 
-This is an **edited copy** of the ZIP supplied by the team. It contains the React frontend and Flask backend; the three original root-level legacy test files have been left untouched. It is a handoff archive, not a GitHub push. No `.git` directory, `.env`, service-account keys, `node_modules`, or Python virtual environments are included.
+This is an **edited copy** supplied by the team. It contains the React frontend and Flask backend; the three original root-level legacy test files have been left untouched. It is a handoff archive, not a GitHub push. No `.git` directory, `.env`, service-account keys, `node_modules`, or Python virtual environments are included.
 
 ## Functionality in this workspace
 
@@ -23,7 +23,7 @@ The Flask API **verifies Firebase ID tokens** (including revocation and verified
 1. Obtain team approval for the Firebase project `utility-alert-system` and make sure your account is authorised to access it. Do not run data-seeding tools on the shared project without approval.
 2. Firebase Console → Authentication → Sign-in method: enable **Email/Password**. Under Settings → Authorized domains, add `localhost` **for local development only** if missing. Create/locate the Web App configuration in Project Settings.
 3. In the extracted `frontend` folder, create `.env` using `firebase.env.template` and fill in your **Firebase Web App config**. These client configuration values are not Admin credentials; never put a service-account private key in React.
-4. Set up Google Cloud Application Default Credentials with your authorised project on your own machine (e.g. `gcloud auth application-default login`). Your Firebase Admin service-account details are not part of this ZIP.
+4. Set up Google Cloud Application Default Credentials with your authorised project on your own machine (e.g. `gcloud auth application-default login`).
 5. In a backend PowerShell terminal:
 
    ```powershell
@@ -83,13 +83,5 @@ Reference: https://firebase.google.com/docs/extensions/official/firestore-send-e
 - In-app notifications remain visible even if email delivery is disabled or the extension fails.
 - The mail outbox never accepts writes directly from browser clients.
 - Check `auditLogs` entries for report verification, technician provisioning, assignment, status updates and alert publication.
-- Photo upload needs `FIREBASE_STORAGE_BUCKET` configured on Flask and Firebase Storage permissions on that trusted backend project.
 
-## Known limitations / pending deployment work
 
-- The ZIP has passed **Python compilation** and **JS/JSX parse checks** in the artifact environment. It has **not** passed a complete React production build or a live Firebase end-to-end test in that environment because dependencies/credentials were unavailable. Your previous laptop's original submission test isn't a verification of every new change in this ZIP.
-- Email delivery requires explicit extension + provider installation, team permissions, confirmed mail account and opt-in. Firebase Auth verification and password reset emails are separate built-in Firebase Authentication operations.
-- Rules are included as a proposed configuration only. **Do not deploy the blanket-deny `firestore.rules` to a shared project before checking other project clients**, since it can break their direct Firestore access. Firebase Admin SDK bypasses these client rules.
-- For serious public deployment: HTTPS, persistent rate limiting, unique submission idempotency, comprehensive security tests, monitoring/alerting, incident grouping concurrency, robust permission matrices and backup/recovery still need review.
-
-**GitHub sharing**: Extract this archive; copy edited `frontend/`, `backend/`, guide and rules to a clean clone on a NEW review branch from `natalie-integration`, test with the team, review diff for secrets, then open a PR. Unzipping it does not automatically push anything to GitHub.
