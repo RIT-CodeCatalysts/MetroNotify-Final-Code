@@ -75,7 +75,7 @@ Reference: https://firebase.google.com/docs/extensions/official/firestore-send-e
 
 ## Smoke tests before sharing/deployment
 
-- Without a Firebase bearer token, private GET `/api/reports` and `/api/tickets` return 401.
+- Without a Firebase bearer token, private GET `/api/reports` and `/api/tickets` return 401. 
 - An unverified email with a valid ID token can load `/api/me` but gets 403 for protected reports/jobs.
 - A ratepayer cannot access Admin endpoints and cannot read another person's report.
 - Technician A can view the **redacted** `/api/tickets/overview`, but `/api/tickets` shows only their own assigned jobs and A cannot change Technician B's ticket.
